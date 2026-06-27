@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2minds — Tile editor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app" class="tile-app">
+  <div id="toolbar">
+    <input id="pngInput" type="file" accept="image/png" hidden>
+    <button type="button" id="importBtn" data-i18n="importPng">Importer PNG</button>
+    <span id="stateBadge" class="badge idle" data-i18n="badge.none">aucun fichier</span>
+    <span class="sep">|</span>
+    <span id="fileInfo" data-i18n="info.default">PNG indexé, 16 couleurs max, dimensions multiples de 8px.</span><div id="langSelect" class="lang-select"></div>
+  </div>
+  <aside id="sidebar">
+    <div class="sec" data-i18n="sec.tiles">Tiles</div>
+    <label class="field-row"><span data-i18n="startValue">Valeur de départ</span><input id="startVal" type="number" min="0" max="447" value="0"></label>
+    <label class="field-row"><span data-i18n="maxBudget">Budget maximum</span><input id="tileBudget" type="number" min="0" max="448" value="0"></label>
+    <label><input id="dedupeOpt" type="checkbox" checked> <span data-i18n="dedupe">Retirer les doublons</span></label>
+    <label><input id="mirrorOpt" type="checkbox" checked> <span data-i18n="mirror">Retirer miroirs H/V/HV</span></label>
+    <div class="sec" data-i18n="sec.export">Exportation</div>
+    <div class="export-grid">
+      <button type="button" id="exportPng" data-i18n="export.png" disabled>⬇ PNG</button>
+      <button type="button" id="exportBin" data-i18n="export.bin" disabled>⬇ BIN</button>
+      <button type="button" id="exportPsg" data-i18n="export.psg" disabled>⬇ PSG</button>
+      <button type="button" id="exportZx7" data-i18n="export.zx7" disabled>⬇ ZX7</button>
+      <button type="button" id="exportTsx" data-i18n="export.tsx" disabled>⬇ TSX</button>
+    </div>
+    <div class="sec" data-i18n="sec.stats">Statistiques</div>
+    <div class="rpanel-stats">
+      <span><span data-i18n="stats.tilesSource">Tiles source</span> : <b id="rawCount">0</b></span>
+      <span><span data-i18n="stats.tilesValid">Tiles valides</span> : <b id="validCount">0</b> <b id="budgetWarn" class="budget-warn"></b></span>
+      <span><span data-i18n="stats.tilesRemoved">Tiles retirées</span> : <b id="removedCount">0</b></span>
+      <span>IDs : <b id="idRange">—</b></span>
+      <span><span data-i18n="stats.tilesBin">Tiles (BIN)</span> : <b id="binWeight">0.00 kB (0 bytes)</b></span>
+      <span id="psgStat" class="is-hidden"><span data-i18n="stats.tilesPsg">Tiles (PSG)</span> : <b id="psgWeight">—</b></span>
+      <span id="zx7Stat" class="is-hidden"><span data-i18n="stats.tilesZx7">Tiles (ZX7)</span> : <b id="zx7Weight">—</b></span>
+    </div>
+    <div class="sec" data-i18n="sec.tilemap">Tilemap</div>
+    <label><input id="tmPal2" type="checkbox"> <span data-i18n="palette2">Palette 2</span></label>
+    <label><input id="tmPriority" type="checkbox"> <span data-i18n="priority">1er plan</span></label>
+    <label class="field-row"><span data-i18n="orderBy">Ordonner par</span><select id="tmOrder">
+      <option value="rows-top" selected data-i18n="order.rowsTop">ligne (Haut en Bas) (défaut)</option>
+      <option value="rows-bottom" data-i18n="order.rowsBottom">ligne (Bas en Haut)</option>
+      <option value="cols-left" data-i18n="order.colsLeft">colonne (Gauche à Droite)</option>
+      <option value="cols-right" data-i18n="order.colsRight">colonne (Droite à Gauche)</option>
+    </select></label>
+    <div class="sec" data-i18n="sec.exportTilemap">Exportation Tilemap</div>
+    <div class="export-grid">
+      <button type="button" id="exportTmBin" data-i18n="export.bin" disabled>⬇ BIN</button>
+      <button type="button" id="exportTmAsm" data-i18n="export.asm" disabled>⬇ ASM</button>
+      <button type="button" id="exportTmRle" data-i18n="export.rle" disabled>⬇ RLE</button>
+      <button type="button" id="exportTmStm" data-i18n="export.stm" disabled>⬇ STM</button>
+      <button type="button" id="exportTmTmx" data-i18n="export.tmx" disabled>⬇ TMX</button>
+
+    </div>
+    <div class="sec" data-i18n="sec.stats">Statistiques</div>
+    <div class="rpanel-stats">
+      <span><span data-i18n="stats.tilemapBin">Tilemap (BIN)</span> : <b id="tmBinWeight">0.00 kB (0 bytes)</b></span>
+      <span id="tmRleStat" class="is-hidden"><span data-i18n="stats.tilemapRle">Tilemap (RLE)</span> : <b id="tmRleWeight">—</b></span>
+      <span id="tmStmStat" class="is-hidden"><span data-i18n="stats.tilemapStm">Tilemap (STM)</span> : <b id="tmStmWeight">—</b></span>
+    </div>
+  </aside>
+  <div class="splitter" data-split="left" aria-hidden="true"></div>
+  <main id="main">
+    <div class="cwrap" id="sourceWrap">
+      <div class="empty" id="emptyState"><div data-i18n="empty.noPng">Aucun PNG chargé</div><button type="button" id="emptyImportBtn" data-i18n="empty.importPng">Importer un PNG</button></div>
+      <canvas id="sourceCanvas" hidden></canvas>
+    </div>
+    <div id="hud"><span id="hudLeft">—</span><span id="hudRight">—</span></div>
+  </main>
+  <div class="splitter" data-split="right" aria-hidden="true"></div>
+  <aside id="rpanel">
+    <div class="sec-head"><div class="sec" data-i18n="sec.shelf">Chutier</div><div class="head-actions"><button type="button" id="reorderBtn" data-i18n="btn.reorder" disabled>Réorganiser</button><button type="button" id="editBtn" data-i18n="btn.edit" disabled>Editer</button></div></div>
+    <canvas id="tilesCanvas"></canvas>
+    <div id="tilesEmpty" class="empty-note" data-i18n="empty.tiles">Les tiles valides apparaîtront ici après import.</div>
+    <div id="tileEditPanel" class="tile-edit is-hidden">
+      <div class="sec-head edit-head"><div class="sec" data-i18n="sec.edit">Edition</div><div class="head-actions"><button type="button" id="editDoneBtn" data-i18n="btn.done">Terminé</button><button type="button" id="editCancelBtn" data-i18n="btn.cancel">Annuler</button></div></div>
+      <div id="editInfo" class="edit-info" data-i18n="edit.info">Choisir une couleur dans la palette, puis peindre les pixels.</div>
+      <canvas id="editCanvas"></canvas>
+      <div class="edit-current"><span id="editColorSwatch"></span><span id="editColorInfo" data-i18n="edit.colorEmpty">Couleur —</span></div>
+    </div>
+    <div class="sec-head palette-sec-head"><div class="sec" data-i18n="sec.palette">Palette</div><div class="head-actions"><button type="button" id="paletteReorderBtn" data-i18n="btn.reorder" disabled>Réorganiser</button><button type="button" id="paletteEditBtn" data-i18n="btn.modify" disabled>Modifier</button><input id="paletteImportInput" type="file" accept=".bin,.asm,.act,.gpl,.png,application/octet-stream,text/plain,image/png" hidden><button type="button" id="paletteImportBtn" data-i18n="btn.import" disabled>Importer</button><button type="button" id="paletteDefaultBtn" class="is-hidden" data-i18n="btn.default" disabled>Par défaut</button></div></div>
+    <canvas id="paletteCanvas"></canvas>
+    <div id="paletteVariants" class="palette-variants"></div>
+    <div class="palette-tools"><input id="paletteVariantInput" type="file" accept=".bin,.asm,.act,.gpl,.png,application/octet-stream,text/plain,image/png" hidden><button type="button" id="paletteVariantBtn" data-i18n="btn.addVariant" disabled>Ajouter une variante</button></div>
+    <div id="paletteEmpty" class="empty-note" data-i18n="empty.palette">Les couleurs utilisées apparaîtront ici après import.</div>
+    <div class="sec palette-export-title" data-i18n="sec.export">Exportation</div>
+    <div class="export-grid palette-export-grid">
+      <button type="button" id="exportPalBin" data-i18n="export.bin" disabled>⬇ BIN</button>
+      <button type="button" id="exportPalAsm" data-i18n="export.asm" disabled>⬇ ASM</button>
+      <button type="button" id="exportPalAct" data-i18n="export.act" disabled>⬇ ACT</button>
+      <button type="button" id="exportPalGpl" data-i18n="export.gpl" disabled>⬇ GPL</button>
+    </div>
+  </aside>
+</div>
+<div id="palPicker" class="palette-picker" hidden>
+  <div id="palPickerBox" class="palette-picker-box">
+    <div class="modal-head">
+      <div class="modal-title" id="palPickerTitle" data-i18n="picker.title">Modifier couleur</div>
+      <button class="modal-close" type="button" id="palPickerClose" aria-label="Fermer" data-i18n-aria="btn.close">&times;</button>
+    </div>
+    <div id="palPickerCurrent" class="palette-current"></div>
+    <div id="smsGrid" class="sms-grid"></div>
+    <div class="palette-picker-actions"><button type="button" id="palPickerCancel" data-i18n="btn.cancel">Annuler</button></div>
+  </div>
+</div>
+<script src="lang-fr.js" defer></script>
+<script src="lang-en.js" defer></script>
+<script src="lang.js" defer></script>
+<script src="png-utils.js" defer></script>
+<script src="palette-io.js" defer></script>
+<script src="tilemap-io.js" defer></script>
+<script src="compress.js" defer></script>
+<script src="zx7.js" defer></script>
+<script src="tiles.js" defer></script>
+
+</body>
+</html>
