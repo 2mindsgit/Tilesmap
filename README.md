@@ -4,6 +4,8 @@
 
 The tool runs entirely in the browser and does not require any server-side processing.
 
+<img width="1375" height="958" alt="screenshot" src="https://github.com/user-attachments/assets/fe0b7547-061f-47a3-92b1-26ddf224f273" />
+
 ### Main Features
 
 * Import indexed PNG images with up to 16 colors.
