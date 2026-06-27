@@ -1,29 +1,34 @@
 ## TILESMAP Editor
 
-**TILESMAP Editor** is a standalone HTML/CSS/JavaScript web application designed to convert indexed PNG images into Sega Master System compatible tile, palette, and tilemap data.
+**TILESMAP Editor** is a standalone HTML/CSS/JavaScript web application designed to convert indexed PNG images into Sega Master System and Game Gear compatible tile, palette, and tilemap data.
 
 The tool runs entirely in the browser and does not require any server-side processing.
 
-<img width="1375" height="958" alt="screenshot" src="https://github.com/user-attachments/assets/fe0b7547-061f-47a3-92b1-26ddf224f273" />
+<img width="1730" height="958" alt="screenshot" src="https://github.com/user-attachments/assets/a3ad6fc4-17b1-467e-a2d8-2c111fd12c7a" />
 
 ### Main Features
 
 * Import indexed PNG images with up to 16 colors.
 * Validate PNG dimensions, which must be multiples of 8 pixels.
 * Automatically split the source image into 8×8 tiles.
-* Generate Sega Master System tile data, with each tile encoded as 32 bytes.
+* Generate Sega Master System / Game Gear tile data, with each tile encoded as 32 bytes.
 * Remove duplicate tiles.
 * Detect and remove horizontally, vertically, and HV mirrored tiles.
 * Reorganize tiles manually through a visual tile shelf.
 * Highlight all source occurrences of a tile when hovering over it.
 * Edit individual tiles directly in the browser with an 8×8 pixel editor.
 * Rebuild the source image, tile shelf, exports, and tilemap after editing.
+* Define a maximum tile budget and display warnings when the optimized tile count exceeds it.
 
 ### Palette Features
 
-* Display and edit the active 16-color palette.
+* Display and edit 16-color palettes.
 * Reorder palette colors for export.
-* Modify colors using the Sega Master System RGB222 color space.
+* Support both Sega Master System and Game Gear palette modes.
+* Use SMS RGB222 colors by default.
+* Automatically switch to Game Gear mode when colors exceed the SMS RGB222 color space.
+* Edit SMS colors through a 64-color RGB222 picker.
+* Edit Game Gear colors through an RGB picker, with values exported as RGB444.
 * Import external palettes without changing tile pixel indices.
 * Add multiple palette variants to quickly test different color sets on the same image.
 * Switch between palette variants instantly.
@@ -47,6 +52,20 @@ Export:
 * ACT Photoshop palette
 * GPL GIMP palette
 
+### Palette Export Modes
+
+SMS mode:
+
+* BIN export uses 8-bit values.
+* ASM export uses WLA-DX `.db $00` values.
+* Colors are encoded as SMS RGB222 values.
+
+Game Gear mode:
+
+* BIN export uses 16-bit little-endian values.
+* ASM export uses WLA-DX `.dw $0000` values.
+* Colors are encoded as Game Gear RGB444 values.
+
 ### Tile Export Formats
 
 * PNG tileset
@@ -55,6 +74,8 @@ Export:
 * ZX7 compressed tile data
 * TSX Tiled tileset XML
 
+For TSX export, the editor can generate either a standalone TSX file or a ZIP archive containing both the TSX file and its linked PNG tileset.
+
 ### Tilemap Export Formats
 
 * BIN, using 16-bit little-endian Master System tilemap entries
@@ -62,6 +83,8 @@ Export:
 * RLE compressed tilemap
 * STM ShrunkTileMap-style compressed tilemap
 * TMX Tiled map XML
+
+For TMX export, the editor can generate either a standalone TMX file or a ZIP archive containing the TMX file, the linked TSX tileset, and the PNG tileset.
 
 ### Compression Support
 
@@ -74,7 +97,7 @@ The editor includes browser-side compression support for:
 
 ### Sega Master System Tilemap Flags
 
-Tilemap entries are exported as 16-bit values using the Master System format:
+Tilemap entries are exported as 16-bit values using the Sega Master System format:
 
 * Base value: tile index + start value
 * `0x0200`: horizontal flip
@@ -82,7 +105,7 @@ Tilemap entries are exported as 16-bit values using the Master System format:
 * `0x0800`: palette 2
 * `0x1000`: priority / foreground
 
-For Tiled TMX exports, tile IDs are shifted by `+1` because `0` is reserved for empty tiles, and mirror flags are converted to Tiled 32-bit flip flags.
+The same tilemap flag structure is also useful for Game Gear projects using the same VDP tilemap format.
 
 ### Tiled Export Support
 
@@ -90,12 +113,25 @@ The editor can export data for use with **Tiled**:
 
 * TSX tileset files linked to the exported PNG tileset.
 * TMX map files using CSV tile data.
+* Tile IDs are shifted by `+1`, because `0` is reserved for empty tiles in Tiled.
+* Horizontal and vertical mirror flags are converted to Tiled 32-bit flip flags.
+* SMS-specific palette and priority flags are exported as Tiled properties.
 * Optional ZIP export including TMX, TSX, and PNG files together.
 * Optional standalone TMX or TSX export.
 
+### Localization
+
+The interface supports external language files:
+
+* `lang.js`
+* `lang-fr.js`
+* `lang-en.js`
+
+Language selection is available through flag icons, and the default language is selected from the browser language when available.
+
 ### Fully Browser-Based
 
-Tile Editor is designed as a self-contained web tool:
+TILESMAP Editor is designed as a self-contained web tool:
 
 * No installation required.
 * No backend required.
