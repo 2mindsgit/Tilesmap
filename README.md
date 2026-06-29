@@ -1,6 +1,6 @@
 ## TILESMAP Editor
 
-**TILESMAP Editor** is a standalone HTML/CSS/JavaScript web application designed to convert indexed PNG images into Sega Master System and Game Gear compatible tile, palette, and tilemap data.
+**TILESMAP Editor** is a standalone HTML/CSS/JavaScript web application designed to convert indexed PNG images into Sega Master System and Game Gear compatible **tile**, **palette**, and **tilemap** data.
 
 The tool runs entirely in the browser and does not require any server-side processing.
 
