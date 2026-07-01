@@ -406,6 +406,22 @@ canvas {
     line-height: 1
 }
 
+.palette-swap-btn {
+    align-self: flex-start;
+    padding: 4px 10px;
+    font-size: 11px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--text)
+}
+
+.palette-swap-btn:hover {
+    background: var(--panel3, #2a2a2a);
+    border-color: var(--green)
+}
+
 #tilesCanvas,#paletteCanvas {
     background: var(--bg);
     border: 1px solid var(--border);
@@ -738,4 +754,72 @@ body.resizing {
 .lang-btn.active {
     border-color: var(--green);
     box-shadow: 0 0 0 1px var(--green)
+}
+
+.palette-mode-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px;
+    margin-bottom: 2px
+}
+
+.palette-mode-row select {
+    width: 72px
+}
+
+.gg-picker {
+    display: flex;
+    flex-direction: column;
+    gap: 8px
+}
+
+.gg-picker[hidden] {
+    display: none!important
+}
+
+.gg-color-line {
+    justify-content: space-between;
+    width: 100%;
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px
+}
+
+.gg-color-line input[type=color] {
+    width: 96px;
+    height: 32px;
+    padding: 0;
+    border: 1px solid var(--border)
+}
+
+.gg-rgb-grid {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 5px
+}
+
+.gg-rgb-grid label {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px;
+    justify-content: space-between
+}
+
+.gg-rgb-grid input {
+    width: 52px
+}
+
+#ggEye {
+    width: 100%
+}
+
+.sms-grid[hidden] {
+    display: none!important
 }

@@ -3,8 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2minds — Tile editor</title>
+<title>2Minds — TILESMAP Editor</title>
+<meta name="description" content="Online tool to convert a PNG into tiles/tilemap for Sega Master System with various exports available">
+<meta property="og:title" content="Online tool to convert a PNG into tiles/tilemap for Sega Master System with various exports available">
+<meta property="og:url" content="https://tilesmap.2minds.fr/">
+<meta property="og:site_name" content="2Minds — TILESMAP Editor">
 <link rel="stylesheet" href="style.css">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
 </head>
 <body>
 <div id="app" class="tile-app">
@@ -25,6 +35,7 @@
     <div class="export-grid">
       <button type="button" id="exportPng" data-i18n="export.png" disabled>⬇ PNG</button>
       <button type="button" id="exportBin" data-i18n="export.bin" disabled>⬇ BIN</button>
+      <button type="button" id="exportC" data-i18n="export.c" disabled>⬇ C</button>
       <button type="button" id="exportPsg" data-i18n="export.psg" disabled>⬇ PSG</button>
       <button type="button" id="exportZx7" data-i18n="export.zx7" disabled>⬇ ZX7</button>
       <button type="button" id="exportTsx" data-i18n="export.tsx" disabled>⬇ TSX</button>
@@ -52,6 +63,7 @@
     <div class="export-grid">
       <button type="button" id="exportTmBin" data-i18n="export.bin" disabled>⬇ BIN</button>
       <button type="button" id="exportTmAsm" data-i18n="export.asm" disabled>⬇ ASM</button>
+      <button type="button" id="exportTmC" data-i18n="export.c" disabled>⬇ C</button>
       <button type="button" id="exportTmRle" data-i18n="export.rle" disabled>⬇ RLE</button>
       <button type="button" id="exportTmStm" data-i18n="export.stm" disabled>⬇ STM</button>
       <button type="button" id="exportTmTmx" data-i18n="export.tmx" disabled>⬇ TMX</button>
@@ -84,6 +96,7 @@
       <div class="edit-current"><span id="editColorSwatch"></span><span id="editColorInfo" data-i18n="edit.colorEmpty">Couleur —</span></div>
     </div>
     <div class="sec-head palette-sec-head"><div class="sec" data-i18n="sec.palette">Palette</div><div class="head-actions"><button type="button" id="paletteReorderBtn" data-i18n="btn.reorder" disabled>Réorganiser</button><button type="button" id="paletteEditBtn" data-i18n="btn.modify" disabled>Modifier</button><input id="paletteImportInput" type="file" accept=".bin,.asm,.act,.gpl,.png,application/octet-stream,text/plain,image/png" hidden><button type="button" id="paletteImportBtn" data-i18n="btn.import" disabled>Importer</button><button type="button" id="paletteDefaultBtn" class="is-hidden" data-i18n="btn.default" disabled>Par défaut</button></div></div>
+    <label class="palette-mode-row"><span data-i18n="palette.mode">Mode palette</span><select id="paletteMode"><option value="sms" data-i18n="palette.mode.sms">SMS</option><option value="gg" data-i18n="palette.mode.gg">GG</option></select></label>
     <canvas id="paletteCanvas"></canvas>
     <div id="paletteVariants" class="palette-variants"></div>
     <div class="palette-tools"><input id="paletteVariantInput" type="file" accept=".bin,.asm,.act,.gpl,.png,application/octet-stream,text/plain,image/png" hidden><button type="button" id="paletteVariantBtn" data-i18n="btn.addVariant" disabled>Ajouter une variante</button></div>
@@ -92,8 +105,10 @@
     <div class="export-grid palette-export-grid">
       <button type="button" id="exportPalBin" data-i18n="export.bin" disabled>⬇ BIN</button>
       <button type="button" id="exportPalAsm" data-i18n="export.asm" disabled>⬇ ASM</button>
+      <button type="button" id="exportPalC" data-i18n="export.c" disabled>⬇ C</button>
       <button type="button" id="exportPalAct" data-i18n="export.act" disabled>⬇ ACT</button>
       <button type="button" id="exportPalGpl" data-i18n="export.gpl" disabled>⬇ GPL</button>
+      <button type="button" id="exportPalJasc" data-i18n="export.jasc" disabled>⬇ JASC</button>
     </div>
   </aside>
 </div>
@@ -105,6 +120,15 @@
     </div>
     <div id="palPickerCurrent" class="palette-current"></div>
     <div id="smsGrid" class="sms-grid"></div>
+    <div id="ggPicker" class="gg-picker" hidden>
+      <label class="gg-color-line"><span data-i18n="picker.ggRgb">RGB888</span><input id="ggColor" type="color" value="#000000"></label>
+      <div class="gg-rgb-grid">
+        <label>R <input id="ggR" type="number" min="0" max="255" value="0"></label>
+        <label>G <input id="ggG" type="number" min="0" max="255" value="0"></label>
+        <label>B <input id="ggB" type="number" min="0" max="255" value="0"></label>
+      </div>
+      <button type="button" id="ggEye" data-i18n="picker.eyedropper">Pipette</button>
+    </div>
     <div class="palette-picker-actions"><button type="button" id="palPickerCancel" data-i18n="btn.cancel">Annuler</button></div>
   </div>
 </div>

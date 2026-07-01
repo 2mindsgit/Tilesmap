@@ -16,6 +16,8 @@ function words(tilemap,tiles,start,opt){
     let v=index.get(cell.tile)||0;
     if(cell.h)v|=0x0200;
     if(cell.v)v|=0x0400;
+    // Per-tile palette 2 (auto depuis les indices >=16) OU option globale
+    if(cell.tile&&cell.tile.palette===1)v|=0x0800;
     if(opt.palette2)v|=0x0800;
     if(opt.priority)v|=0x1000;
     return v&0xFFFF;
